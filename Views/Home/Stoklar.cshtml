@@ -1,0 +1,202 @@
+﻿
+@model  Stok
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DataModel dm = new DataModel();
+    var lst = dm.Stoks.Where(q => q.No > 0).ToList();
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    .table {
+        background-color: #f8f9fd;
+        margin-left: 250px;
+    }
+
+    body {
+        background-color: #eeeeed;
+    }
+</style>
+
+<div class="container" style="margin-left:50px;width:1250px">
+    <table class="table" style="margin-top: 100px; width: 100%; margin-left: 170px; border-left: 1px solid black; border-right: 1px solid black; border-block-end: 1px solid black ">
+        <tr style="height:50px">
+            <td style="font-weight: bold; font-size:15px">No</td>
+            <td style="font-weight: bold; font-size:15px">StokKodu</td>
+            <td style="font-weight: bold; font-size:15px">StokAdı</td>
+            <td style="font-weight: bold;font-size:15px">Barkod</td>
+            <td style="font-weight: bold; font-size: 15px">BirimFiyat</td>
+
+            <td style="font-weight: bold; font-size: 15px"></td>
+            <td style="font-weight: bold; font-size: 15px"></td>
+
+        </tr>
+        @foreach (var item in lst)
+        {
+            <tr style="height:60px">
+                <td>
+                    @item.No
+                </td>
+                <td>
+                    @item.Kod
+                </td>
+                <td>@item.Ad</td>
+                <td>
+                    @item.Barkod
+                </td>
+                <td>
+                    @item.BirimFiyat
+                </td>
+                <td>
+                    @*<button type="submit">Ekle</button>*@
+                    @using (Ajax.BeginForm("StokSil", "Home", new AjaxOptions
+                    {
+                        HttpMethod = "post",
+
+                        OnSuccess = "Sonuc",
+                        OnFailure = "Hata()",
+                    }))
+                    {
+                        @Html.AntiForgeryToken()
+
+
+                        <a class="btn btn-danger" data-toggle="modal" data-target="#@item.No" style="background-color: #e84f44; color: black; border-radius: 20px; height: 35px; width: 100px;font-size:14px">
+                            Sil
+                        </a>
+                        <div class="modal fade" id="@item.No" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title" style="background-color:#e1eceb;color:black">Stok Sil</h4>
+                                    </div>
+                                    <div class="modal-body" id="delete_modalBody">
+
+                                        <input name="id" style="height:30px;color:black;border-color:white" type="text" value="@item.No" required /><h4 style="color:black">Nolu stoğu silmek istediğinize emin misiniz?</h4>
+
+                                        <p class="debug-url"></p>
+                                    </div>
+                                    <div class="modal-footer">
+
+                                        <a href="~/home/stoklar"><button style="background-color:#e84f44" type="submit">Sil</button></a>
+                                        @*<button type="submit">sil</button>*@
+                                        @*<button type="submit" class="btn btn-default confirm_delete" data-dismiss="modal">Sil</button>*@
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+                                        @*<script>
+                                                $('#btn').click(function () {
+                                                    $('#@item.No').modal('hide');
+                                                });
+                                        </script>*@
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                </td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </tr>
+        }
+
+    </table>
+
+
+
+</div>
+
+
+
+@*@using (Ajax.BeginForm("StokEkle", "Home", new AjaxOptions
+    {
+        HttpMethod = "post",
+        OnSuccess = "Sonuc",
+        OnFailure = "Hata()",
+    }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.No)
+        <a class="btn btn-danger" data-toggle="modal" data-target="#@Model.No" style="background-color: #eae86f; color: black; border-radius: 20px; height: 35px; width: 100px;font-size:15px;margin-left:250px">
+            Ekle
+        </a>
+        <div class="modal fade" id="@Model.No" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+
+                        <table class="table " style="height:200px;width:600px;background-color:#e1eceb">
+                            <tr>
+                                <th>Ürün Kodu</th>
+                                <td>:</td>
+                                <td>@Html.TextBoxFor(m => Model.Kod)</td>
+                            </tr>
+                            <tr>
+                                <th style="height:40px;font-size:15px">Stok Ad</th>
+                                <td>:</td>
+                                <td>@Html.TextBoxFor(m => Model.Ad)</td>
+                            </tr>
+                            <tr>
+                                <th>Barkod</th>
+                                <td>:</td>
+                                <td>@Html.TextBoxFor(m => Model.Barkod)</td>
+                            </tr>
+                            <tr>
+                                <th style="height:40px;font-size:15px">Birim Fiyatı</th>
+                                <td>:</td>
+                                <td>
+                                    @Html.TextBoxFor(m => Model.BirimFiyat)
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <button type="submit" style="color:aliceblue; height:30px;width:100px;background-color:#425c5a;border-radius:20px">Kaydet</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+
+    }*@

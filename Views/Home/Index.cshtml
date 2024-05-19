@@ -1,0 +1,210 @@
+﻿@using FaturaWeb.Models
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+@model PostObject
+@{
+    ViewBag.Title = "Index";
+    DataModel dm = new DataModel();
+    if (Model.Find == null)
+    {
+        Model.Find = "";
+    }
+    var lst = dm.Faturas.Where(q => q.FaturaNumarasi.Contains(Model.Find) ||q.Cari.Ad.ToLower().Contains(Model.Find)).ToList();
+}
+<style>
+    body {
+        background-color: #eeeeed;
+    }
+
+    .deneme {
+        margin-left: 0px;
+        margin-top: 50px;
+        width: 100%;
+    }
+
+    .table-dark {
+        background-color: #f8f9fd;
+    }
+
+    .table, tr {
+        border: 0.5px solid #808080;
+    }
+
+    td {
+        height: 60px;
+        color: black;
+    }
+
+    .i.fa.fa-plus {
+        height: 150px;
+        width: 150px;
+    }
+
+    btn {
+        height: 30px;
+        width: 150px;
+    }
+
+    .table {
+        width: 1200px;
+        background-color: #f8f9fd;
+        margin-left: 250px;
+    }
+
+    .fa.fa-plus {
+        height: 50px;
+        width: 90px;
+    }
+
+    tr:hover {
+        background-color: #c9deeb;
+    }
+</style>
+<div class="w3-sidebar w3-xxlarge" style="width: 200px; background-color: #f8f9fd">
+    <a href="/home/index" style="height:70px;width:200px;color:black;font-size:20px;margin-left:0px;text-align:left" class="w3-bar-item w3-button"><i class="fa fa-try"></i>  Faturalar</a><br />
+
+    <a href="/home/stoklar" style="height: 70px; width: 200px; color: black; font-size: 20px;text-align:left" class="w3-bar-item w3-button"><i class="fa fa-eye"></i>  Stoklar</a><br />
+    <a href="/home/stoklar" style="height: 70px; width: 200px; color: black; font-size: 20px;text-align:left" class="w3-bar-item w3-button"><i class="fa fa-users"></i>  Cariler</a><br />
+
+</div>
+<div style="height: 30px; width: 500px;margin-left: 0px">
+    @*Find : @Model.Find*@
+    <form action="/Home/Index">
+        <input type="text" style="width:500px;height:30px;margin-left:450px;margin-top:50px" name="find" />
+    </form>
+</div>
+<div class="deneme">
+    <div class="kayit" style="margin-left:200px;margin-top:150px">
+        <a class="btn btn-success" style="background-color: #eae86f; color: black; border-radius: 20px; height: 35px; width: 140px;font-size:15px;margin-left:1100px" href="/Home/edit/0">Ekle</a>
+
+
+        <br /><br />
+    </div>
+    <table class="table">
+        <tr>
+            <td style="font-weight:bold"> No </td>
+            <td style="font-weight:bold"> Cari </td>
+            <td style="font-weight: bold; width: 250px">  Fatura Numarası </td>
+            <td style="font-weight:bold;width:250px"> Tarih </td>
+            <td style="font-weight: bold; width: 200px">  Toplam </td>
+            <td></td>
+            <td></td>
+        </tr>
+        @foreach (var item in lst)
+        {
+            <tr>
+                <td style="height:30px">
+                    @item.No
+                </td>
+                <td>
+                    @item.Cari.Ad
+                </td>
+
+                <td>
+                    @item.FaturaNumarasi
+                </td>
+                <td>
+                    @item.Tarih
+                </td>
+                <td>
+                    @item.Toplam
+                </td>
+                <td style="width:100px" align="center">
+
+                    <a class="btn btn-warning" href="/Home/Edit/@item.No" style="background-color:#3999d8; color:black; border-radius: 20px; height: 35px; width: 100px;font-size:14px">
+                        Düzenle
+                    </a>
+                </td>
+                <td style="width:190px">
+
+
+                    @using (Ajax.BeginForm("DeleteFtr", "Home", new AjaxOptions
+                    {
+                        HttpMethod = "post",
+
+                        OnSuccess = "Sonuc",
+                        OnFailure = "Hata()",
+                    }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => @item.No)
+                        <div class="container" style="height:40px;width:100px;">
+                            <a class="btn btn-danger" data-toggle="modal" data-target="#@item.No" style="background-color: #e84f44; color: black; border-radius: 20px; height: 35px; width: 100px;font-size:14px">
+                                Sil
+                            </a>
+                            <div class="modal fade" id="@item.No" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" style="background-color:#e1eceb;color:black"> Fatura Sil</h4>
+                                        </div>
+                                        <div class="modal-body" id="delete_modalBody">
+                                            <h4 style="color:black">Faturayı silmek istediğinize emin misiniz?</h4>
+                                            <input name="No" style="height:30px;color:black;border-color:white;visibility:hidden" type="text" value="@item.No" />
+
+                                            <p class="debug-url"></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button id="btn" type="submit" style="color:aliceblue; height:30px;width:100px;background-color:#425c5a;border-radius:20px">Sil</button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    }
+
+                </td>
+                <td>
+                    @*<button id="btn">görüntüle</button>
+                    <div id="partialView">
+
+                    </div>*@
+
+                    @*<script>
+
+                        $('#btn').click(function () {
+                            $(document).ready(function () {
+                                $("#partialView").load('/home/partial');
+                            });
+                        });
+                    </script>*@
+
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<script>
+    function Sonuc(result) {
+        if (result.Result == true) {
+            alert("Saved.");
+            window.location = "/Home/Index";
+        }
+        else {
+            alert(result.Message);
+        }
+    }
+    function Hata() {
+        alert("Error!");
+    }
+</script>
+
+
+
+
+    @*tr:nth-child(even) {
+        background-color:;
+    }*@
